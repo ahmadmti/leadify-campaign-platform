@@ -1,0 +1,21 @@
+// Variables
+@import 'variables';
+// Bootstrap
+@import '~bootstrap/scss/bootstrap';
+// Fonts
+// Fonts
+@import url('https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900');
+// vuetify.css;
+@import '~vuetify/dist/vuetify.css';
+.ck-editor__editable {
+    min-height: 100px;
+}
+
+@import url('https://fonts.googleapis.com/css?family=Allerta');
+* {
+    font-family: "Allerta";
+}
+
+.ck-file-dialog-button {
+    display: none;
+}
