@@ -125,68 +125,7 @@ class AppointmentCalendarController extends AdminBaseController
 
  
    
-    public function update(UpdateRequest $request,$id)
-    {
-      
-        // return $request->all();
-        try {
-            $user = Auth::user();
-            $timezone = $user->timezone;
-            $appointment         = Appointment::findOrFail($id);
-
-        // Check current logged in user is member of appointment campaign
-        $userActiveCampaigns = $this->user->activeCampaigns()->pluck('id')->toArray();
-        if(!in_array($appointment->lead->campaign_id, $userActiveCampaigns))
-        {
-            $errorMessage = Reply::error('messages.notAllowed');
-
-            return response()->json($errorMessage);
-        }
-
-        \DB::beginTransaction();
-        $time = Carbon::createFromFormat('m-d-Y H:i', $request->appointment_time)->format('Y-m-d H:i:s');
-        
-        if ($appointment->appointment_time == $time) 
-        {
-        //   return "if"; 
-          $appointment->appointment_time =  $time;
-        }
-        else
-        {
-            if ($timezone == "Indian/Mauritius") {
-                $appointment->appointment_time =  Carbon::parse($time)->addMinutes(180);
-            }
-            else {
-                $appointment->appointment_time =  $time;
-            }
-        }
-        if ($request->meeting) {
-            $appointment->meeting_link	 = $this->CryptoJSAesEncrypt('usman',$appointment->appointment_time);
-            
-            $this->meetingLink($appointment->appointment_time);
-            $saleMember = SalesMember::where('id',$request->sales_member_id)->first();
-            $code = json_decode($appointment->meeting_link,true);
-            $url = url("/admin/meeting").'?st='.$code['salt'].'&iv='.$code['iv'].'&clp='.$code['ciphertext']; 
-
-           Notification::route('mail', $saleMember->email)->notify(new SendMeetingLink('Appointment Meeting Link',$url));
-      
-        }
-        $appointment->sales_member_id = $request->sales_member_id;
-        $appointment->save();
-            
-        \DB::commit();
-
-        $data = [
-            'html' => '<input type="hidden" id="delete_appointment_id" name="delete_appointment_id" value="'.$appointment->id.'"><a href="javascript:;" onclick="appointmentChanged()">'.trans('app.view').'</a>'
-        ];
-
-        return Reply::successWithData($data);
-        } catch (\Exception $th ) {
-            return $th;
-           }
-      
-
-    }
+  
 
     public function destroy($id)
     {
@@ -412,14 +351,80 @@ class AppointmentCalendarController extends AdminBaseController
        
      }
     
-    public function store(StoreRequest $request)
+     public function update(UpdateRequest $request,$id)
+    {
+      
+        // return $request->all();
+        try {
+            $user = Auth::user();
+            $timezone = $user->timezone;
+            $appointment         = Appointment::findOrFail($id);
+
+        // Check current logged in user is member of appointment campaign
+        $userActiveCampaigns = $this->user->activeCampaigns()->pluck('id')->toArray();
+        if(!in_array($appointment->lead->campaign_id, $userActiveCampaigns))
+        {
+            $errorMessage = Reply::error('messages.notAllowed');
+
+            return response()->json($errorMessage);
+        }
+
+        \DB::beginTransaction();
+        $time = Carbon::createFromFormat('m-d-Y H:i', $request->appointment_time)->format('Y-m-d H:i:s');
+        
+        if ($appointment->appointment_time == $time) 
+        {
+        //   return "if"; 
+          $appointment->appointment_time =  $time;
+        }
+        else
+        {
+            if ($timezone == "Indian/Mauritius") {
+                $appointment->appointment_time =  Carbon::parse($time)->addMinutes(180);
+            }
+            else {
+                $appointment->appointment_time =  $time;
+            }
+        }
+        if ($request->meeting) {
+            // $appointment->meeting_link	 = $this->CryptoJSAesEncrypt('usman',$appointment->appointment_time);
+            
+            // $this->meetingLink($appointment->appointment_time);
+            $saleMember = SalesMember::where('id',$request->sales_member_id)->first();
+            $code = base64_encode($appointment->meeting_link);
+            $url = url("/admin/meeting").'?code'.$code; 
+            // $code = json_decode($appointment->meeting_link,true);
+            // $url = url("/admin/meeting").'?st='.$code['salt'].'&iv='.$code['iv'].'&clp='.$code['ciphertext']; 
+
+           Notification::route('mail', $saleMember->email)->notify(new SendMeetingLink('Appointment Meeting Link',$url));
+           if ($user->email != null) {
+            Notification::route('mail', $user->email)->notify(new SendMeetingLink('Appointment Meeting Link',$url));
+        }
+        }
+        $appointment->sales_member_id = $request->sales_member_id;
+        $appointment->save();
+            
+        \DB::commit();
+
+        $data = [
+            'html' => '<input type="hidden" id="delete_appointment_id" name="delete_appointment_id" value="'.$appointment->id.'"><a href="javascript:;" onclick="appointmentChanged()">'.trans('app.view').'</a>'
+        ];
+
+        return Reply::successWithData($data);
+        } catch (\Exception $th ) {
+            return $th;
+           }
+      
+
+    }
+     public function store(StoreRequest $request)
     {
         // return $request->all();
        \DB::beginTransaction();
 
-       $user = Auth::user();
+        $user = Auth::user();
        $timezone = $user->timezone;
-     
+    
       
        try {
             $appointment         = new Appointment();
@@ -433,18 +438,25 @@ class AppointmentCalendarController extends AdminBaseController
             $appointment->sales_member_id = $request->sales_member_id;
             $appointment->created_by = $this->user->id;
             if ($request->meeting) {
-            
-            $appointment->meeting_link	 = $this->CryptoJSAesEncrypt('usman',$appointment->appointment_time);
+           
+         
+            // $appointment->meeting_link	 = $this->CryptoJSAesEncrypt('usman',$appointment->appointment_time);
+            $appointment->meeting_link	 = base64_encode($appointment->appointment_time);
             $saleMember = SalesMember::where('id',$request->sales_member_id)->first();
      
-            $code = json_decode($appointment->meeting_link,true);
-             $url = url("/admin/meeting").'?st='.$code['salt'].'&iv='.$code['iv'].'&clp='.$code['ciphertext']; 
+            $code = base64_encode($appointment->meeting_link);
+            $url = url("/admin/meeting").'?code'.$code; 
+           
+            //  $url = url("/admin/meeting").'?st='.$code['salt'].'&iv='.$code['iv'].'&clp='.$code['ciphertext']; 
 
             Notification::route('mail', $saleMember->email)->notify(new SendMeetingLink('Appointment Meeting Link',$url));
-       
+            
+            if ($user->email != null) {
+                Notification::route('mail', $user->email)->notify(new SendMeetingLink('Appointment Meeting Link',$url));
+            }
             
           
-            $this->meetingLink($appointment->appointment_time);
+            // $this->meetingLink($appointment->appointment_time);
             
             }
             $appointment->save();
@@ -468,13 +480,11 @@ class AppointmentCalendarController extends AdminBaseController
 
     }
     private function meetingLink($time){
-        return $this->CryptoJSAesEncrypt( 'usman',$time);
-       
-
+        return $this->CryptoJSAesEncrypt('usman',$time);
     }
     private function CryptoJSAesEncrypt($passphrase, $plain_text){
 
-        $salt = openssl_random_pseudo_bytes(40);
+        $salt = openssl_random_pseudo_bytes(256);
         $iv = openssl_random_pseudo_bytes(16);
         //on PHP7 can use random_bytes() istead openssl_random_pseudo_bytes()
         //or PHP5x see : https://github.com/paragonie/random_compat

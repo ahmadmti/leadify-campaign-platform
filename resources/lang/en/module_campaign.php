@@ -70,6 +70,6 @@ return array (
     'performance' => 'Performance',
     'campaignTopperMessage' => 'You are the top member for this campaign. Keep up the good work.',
     'callHistory' => 'Call History',
-    'sendMail' => 'Did you want to send meeting link?',
+    'sendMail' => 'Do you want to send meeting link?',
     'meeting_link' => 'Meeting Link',
 );

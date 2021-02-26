@@ -222,6 +222,23 @@
 <script src="{{ asset('assets/js/ajax-helper/admin/helper.js') }}"></script>
 
 <script>
+    function saveAndExit() {
+        var url = "{{ route('callmanager.save-lead') }}";
+
+        $.easyAjax({
+            type: 'POST',
+            url: url,
+            file: true,
+            container: "#lead-action-form",
+            messagePosition: "toastr",
+            success: function(response) {
+                if(response.status == 'success')
+                {
+                    window.location.href = "{{ route('admin.callmanager.index') }}";
+                }
+            }
+        });
+    }
 
 $(function() {
     $('.calendar-container').calendar();
@@ -610,7 +627,7 @@ $('#button').on('click', '.time', function() {
             "_token": "{{ csrf_token() }}",
             'date': $('#date').val(),
             'time': $(this).attr('id'),
-          
+            'campaign_id' : "3",
         },
         success: function(response) {
 
@@ -671,7 +688,7 @@ $('.calendar-container').calendar({
             data: {
                 "_token": "{{ csrf_token() }}",
                 'date': $('#date').val(),
-               
+                'campaign_id' : "3",
             },
             success: function(response) {
                 $("#button button").each(function() {

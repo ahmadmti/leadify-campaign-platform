@@ -4,7 +4,7 @@ use App\Events\AppointmentAlert;
 
 Route::get('/book-appointment', ['as' => 'book-appointments', 'uses' => 'Admin\AppointmentCalendarController@bookAppointmentLink']);
 Route::get('/availableDays', ['as' => 'check-availableDays', 'uses' => 'Admin\ScheduleSettingController@availableDays'] );
-    
+Route::post('/callmanager/save', ['as' => 'callmanager.save-lead-time', 'uses' => 'CallManagerController@saveLeadTime']);
 
 // Login And Forget Password Routes
 Route::group(['namespace' => 'Auth', 'prefix' => 'admin', 'middleware' => ['web']], function () {
@@ -15,9 +15,13 @@ Route::group(['namespace' => 'Auth', 'prefix' => 'admin', 'middleware' => ['web'
 });
 
 
+
 // Admin Panel After Login
 Route::group(['middleware' => ['auth.admin', 'web', 'admin.permission.check'],'namespace' => 'Admin', 'prefix' => 'admin'], function () {
     
+    Route::get('/meeting',function(){
+        return view('admin.meeting.index');
+    });
 
     // region Dashboard Routes
     Route::resource('dashboard', 'DashboardController', ['as' => 'admin']);
