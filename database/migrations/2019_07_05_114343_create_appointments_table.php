@@ -16,6 +16,7 @@ class CreateAppointmentsTable extends Migration
         Schema::create('appointments', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->dateTime('appointment_time');
+            $table->text('meeting_link')->default(null);
             $table->bigInteger('lead_id')->unsigned()->nullable()->default(null);
             $table->foreign('lead_id')->references('id')->on('leads')->onUpdate('cascade')->onDelete('cascade');
             $table->bigInteger('sales_member_id')->unsigned()->nullable()->default(null);

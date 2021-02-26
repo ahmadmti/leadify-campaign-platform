@@ -157,6 +157,13 @@
             </select>
         </div>
     </div>
+    <div class="form-group row">
+    <label class="col-sm-3 col-form-label"></label>
+    <div class="col-sm-9">
+    <input type="checkbox" id="meeting" name="meeting" value="true">
+    <label for="meeting">@lang('module_campaign.sendMail')</label><br>
+    </div>
+    </div>
 
 
 
@@ -178,7 +185,7 @@
 {{Form::close()}}
 
 <script>
-// calender
+
 $(function() {
     $('.calendar-container').calendar();
 });

@@ -156,6 +156,10 @@ class AppointmentCalendarController extends AdminBaseController
                 $appointment->appointment_time =  $time;
             }
         }
+        if ($request->meeting) {
+            $appointment->meeting_link	 = $this->CryptoJSAesEncrypt('usman',$appointment->appointment_time);
+            $this->meetingLink($appointment->appointment_time);
+        }
         $appointment->sales_member_id = $request->sales_member_id;
         $appointment->save();
             
@@ -413,10 +417,13 @@ class AppointmentCalendarController extends AdminBaseController
             }
             $appointment->sales_member_id = $request->sales_member_id;
             $appointment->created_by = $this->user->id;
-            
+            if ($request->meeting) {
+                $appointment->meeting_link	 = $this->CryptoJSAesEncrypt('usman',$appointment->appointment_time);
+            $this->meetingLink($appointment->appointment_time);
+            }
             $appointment->save();
             
-    
+          
             $lead = Lead::find($request->lead_id);
             $lead->appointment_booked = true;
             $lead->save();
@@ -434,6 +441,27 @@ class AppointmentCalendarController extends AdminBaseController
        
 
     }
+    private function meetingLink($time){
+        return $this->CryptoJSAesEncrypt( 'usman',$time);
+    }
+    private function CryptoJSAesEncrypt($passphrase, $plain_text){
+
+        $salt = openssl_random_pseudo_bytes(40);
+        $iv = openssl_random_pseudo_bytes(16);
+        //on PHP7 can use random_bytes() istead openssl_random_pseudo_bytes()
+        //or PHP5x see : https://github.com/paragonie/random_compat
+    
+        $iterations = 99;  
+        $key = hash_pbkdf2("sha512", $passphrase, $salt, $iterations, 64);
+    
+        $encrypted_data = openssl_encrypt($plain_text, 'aes-256-cbc', hex2bin($key), OPENSSL_RAW_DATA, $iv);
+    
+        $data = array("ciphertext" => base64_encode($encrypted_data), "iv" => bin2hex($iv), "salt" => bin2hex($salt));
+        // return $data;
+        return json_encode($data);
+    }
+    
+    // $string_json_fromPHP = CryptoJSAesEncrypt("your passphrase", "your plain text");
     
  
 }

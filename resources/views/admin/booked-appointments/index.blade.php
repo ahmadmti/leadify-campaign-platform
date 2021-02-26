@@ -31,6 +31,7 @@
                                 <th>@lang('app.campaign')</th>
                                 <th>@lang('module_campaign.salesMember')</th>
                                 <th>@lang('module_campaign.appointmentTime')</th>
+                                <th>@lang('module_campaign.meeting_link')</th>
                                 <th>@lang('app.action')</th>
                             </tr>
                             @foreach($bookedAppointments as $bookedAppointment)
@@ -38,6 +39,20 @@
                                     <td class="font-weight-600"><a href="{{ route('admin.campaigns.show', md5($bookedAppointment->campaign_id)) }}">{{ $bookedAppointment->campaign_name }}</a></td>
                                     <td>{{ trim($bookedAppointment->first_name .' ' . $bookedAppointment->last_name) }}</td>
                                     <td>{{ $bookedAppointment->appointment_time->timezone($user->timezone)->format($user->date_format .' ' . $user->time_format) }}</td>
+                                    <td>
+                                                               
+                                    @if($bookedAppointment->meeting_link)    
+                                    @php
+                                    $code = json_decode($bookedAppointment->meeting_link,true);
+                                    $url = url("/meeting").'?st='.$code['salt'].'&iv='.$code['iv'].'&clp='.$code['ciphertext']; 
+
+                                    echo   "<a target='_blank' href='$url'>Link</a>";
+                
+
+                                    @endphp  
+                                 
+                                    @endif
+                                    </td>
                                     <td>
                                         <div class="margin">
                                         <a href="{{ route('admin.callmanager.lead', [md5($bookedAppointment->lead_id)]) }}" class="btn btn-icon btn-success"
@@ -74,8 +89,26 @@
 <script src="{{ asset('assets/modules/fullcalendar/fullcalendar.min.js') }}"></script>
 <script src="{{ asset('assets/modules/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
 <script src="{{ asset('assets/modules/bootstrap-timepicker/js/bootstrap-timepicker.min.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
 <script>
+function CryptoJSAesDecrypt(passphrase,encrypted_json_string){
 
+var obj_json = JSON.parse(encrypted_json_string);
+
+var encrypted = obj_json.ciphertext;
+var salt = CryptoJS.enc.Hex.parse(obj_json.salt);
+var iv = CryptoJS.enc.Hex.parse(obj_json.iv);   
+
+var key = CryptoJS.PBKDF2(passphrase, salt, { hasher: CryptoJS.algo.SHA512, keySize: 64/8, iterations: 99});
+
+
+var decrypted = CryptoJS.AES.decrypt(encrypted, key, { iv: iv});
+
+return decrypted.toString(CryptoJS.enc.Utf8);
+}
+var object ='{"ciphertext":"o7AD48G8YscuUTKMswZIOva40KyHbc2ZT8\/PLREedDg=","iv":"3b5e3407c7d899c9008e95fe94f0108d","salt":"7be345dcdd0f7ce7827c6a979caf9b2504fa3928e310cf57e88ccc4cf82eaf3eb186608182e19e783b32c6f1a796fd68a1cbe7c21fa1bccf417b18827361b3282e1688d1a4b3f8394aed389b5e55f9ba26bd5a44ccf0eadea902a88693e5c1323266476c0cb9c4b9cd1bd70b1693c494c57d762a6d6c83ec0949d20c6fb4b881bde54b435737312b6e0c481ffeb3326296579bbfa091d8e57d5b4825d51d4c8be4ae65cb888bb74bc2d7e1d42eea976da2c71d0a47831d221ab7dbc761c9141282b79bd4c0ea0314efe6ef2ae266195d6b79d9974a29740918601e0a14feba142d484d342e9297244d1e3ad1873ffa727ba3f0a4c11838543aa6c1b53e627fc8"}';
+
+console.log(CryptoJSAesDecrypt('usman',object));
 
 try {
     function viewLead (id) {

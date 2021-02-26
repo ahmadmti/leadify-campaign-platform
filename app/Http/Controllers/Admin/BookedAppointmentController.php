@@ -38,7 +38,7 @@ class BookedAppointmentController extends AdminBaseController
    {
        try {
         $this->appointmentBookedActive = 'active';
-        $this->bookedAppointments = Appointment::select('sales_members.first_name', 'sales_members.last_name', 'campaigns.id as campaign_id', 'campaigns.name as campaign_name', 'appointments.appointment_time', 'appointments.sales_member_id', 'appointments.id', 'appointments.lead_id')
+        $this->bookedAppointments = Appointment::select('sales_members.first_name', 'sales_members.last_name', 'campaigns.id as campaign_id', 'campaigns.name as campaign_name', 'appointments.appointment_time','appointments.meeting_link', 'appointments.sales_member_id', 'appointments.id', 'appointments.lead_id')
        ->join('leads', 'leads.id', '=', 'appointments.lead_id')
        ->join('campaigns', 'campaigns.id', '=', 'leads.campaign_id')
        ->join('sales_members', 'sales_members.id', '=', 'appointments.sales_member_id')

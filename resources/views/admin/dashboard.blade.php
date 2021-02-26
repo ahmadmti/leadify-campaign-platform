@@ -128,6 +128,7 @@
                                 <th>@lang('app.campaign')</th>
                                 <th>@lang('module_campaign.salesMember')</th>
                                 <th>@lang('module_campaign.appointmentTime')</th>
+                                <th>@lang('module_campaign.meeting_link')</th>
                                 <th>@lang('app.action')</th>
                             </tr>
                             @foreach($bookedAppointments as $bookedAppointment)
@@ -135,6 +136,10 @@
                                     <td class="font-weight-600"><a href="{{ route('admin.campaigns.show', md5($bookedAppointment->campaign_id)) }}">{{ $bookedAppointment->campaign_name }}</a></td>
                                     <td>{{ trim($bookedAppointment->first_name .' ' . $bookedAppointment->last_name) }}</td>
                                     <td>{{ $bookedAppointment->appointment_time->timezone($user->timezone)->format($user->date_format .' ' . $user->time_format) }}</td>
+                                    <td>
+                                    @if($bookedAppointment->meeting_link)    
+                                     <a target="_blank" href="{{ $bookedAppointment->meeting_link}}">Link</a></td>
+                                    @endif
                                     <td>
                                         <a href="{{ route('admin.callmanager.lead', [md5($bookedAppointment->lead_id)]) }}" class="btn btn-icon btn-success"
                                            data-toggle="tooltip" data-original-title="@lang('module_call_enquiry.goAndResumeCall')"><i class="fas fa-play" aria-hidden="true"></i></a>
