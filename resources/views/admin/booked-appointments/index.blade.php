@@ -44,7 +44,7 @@
                                     @if($bookedAppointment->meeting_link)    
                                     @php
                                     $code = json_decode($bookedAppointment->meeting_link,true);
-                                    $url = url("/meeting").'?st='.$code['salt'].'&iv='.$code['iv'].'&clp='.$code['ciphertext']; 
+                                    $url = url("/admin/meeting").'?st='.$code['salt'].'&iv='.$code['iv'].'&clp='.$code['ciphertext']; 
 
                                     echo   "<a target='_blank' href='$url'>Link</a>";
                 

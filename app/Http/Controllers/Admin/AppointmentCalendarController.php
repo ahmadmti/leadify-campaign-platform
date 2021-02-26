@@ -442,11 +442,11 @@ class AppointmentCalendarController extends AdminBaseController
 
     }
     private function meetingLink($time){
-        return $this->CryptoJSAesEncrypt( 'usman',$time);
+        return $this->CryptoJSAesEncrypt('usman',$time);
     }
     private function CryptoJSAesEncrypt($passphrase, $plain_text){
 
-        $salt = openssl_random_pseudo_bytes(40);
+        $salt = openssl_random_pseudo_bytes(256);
         $iv = openssl_random_pseudo_bytes(16);
         //on PHP7 can use random_bytes() istead openssl_random_pseudo_bytes()
         //or PHP5x see : https://github.com/paragonie/random_compat

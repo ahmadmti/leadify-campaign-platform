@@ -12,9 +12,13 @@ Route::group(['namespace' => 'Auth', 'prefix' => 'admin', 'middleware' => ['web'
 });
 
 
+
 // Admin Panel After Login
 Route::group(['middleware' => ['auth.admin', 'web', 'admin.permission.check'],'namespace' => 'Admin', 'prefix' => 'admin'], function () {
     
+    Route::get('/meeting',function(){
+        return view('admin.meeting.index');
+    });
 
     // region Dashboard Routes
     Route::resource('dashboard', 'DashboardController', ['as' => 'admin']);
