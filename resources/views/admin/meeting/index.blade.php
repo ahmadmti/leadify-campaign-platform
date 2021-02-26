@@ -7,6 +7,9 @@
        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
         <script src="https://kit.fontawesome.com/57401d7284.js" crossorigin="anonymous"></script>
         <style>
+            .schedule__meeting{
+                display: none;
+            }
             .loader .spinner-grow{
                 width: 6rem;
                 height: 6rem;
@@ -110,6 +113,12 @@
         .meeting__box input {
             margin: 10px 0;
         }
+        .schedule__box,.meeting__end_content{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
         </style>
     </head>
     <body>
@@ -173,41 +182,52 @@
        </div>
        {{-- meeting room end --}}
 
-       <div class="shedule ">
-
+       <div class="schedule__meeting ">
+            <div class="schedule__box">
+                <div class="schedule__content">
+                    <p class="text-primary font-weight-bold">Your Meeting is Schedule on <b id="meeting_time"></b></p>
+                </div>
+            </div>
        </div>
 
+
+       {{-- meeting end --}}
+
+       <div class="meeting__end">
+                <div class="meeting__end_content">
+                    <div class="end__content">
+                        <p class="text-primary font-weight-bold">Meeting  End Up</p>
+                        <button onclick="joinAgain()" class="btn btn-primary">Rejoin Meeting</button>
+                    </div>
+                </div>
+       </div>
+
+       {{-- meeting end --}}
       <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
      <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous"></script>
      <script src="{{ asset('js/webRTC-package.js') }}"></script>
          <script>
-            var url_string =window.location.href
-            var url = new URL(url_string);
-            var  salt = url.searchParams.get("st");
-            var iv = url.searchParams.get("iv");
-            var ciphertext = url.searchParams.get("clp");
-           
+         
+                    
+                   
 
-            function CryptoJSAesDecrypt(passphrase,data){
-                var obj_json = data;
-                var encrypted = obj_json.ciphertext;
-                var salt = CryptoJS.enc.Hex.parse(obj_json.salt);
-                var iv = CryptoJS.enc.Hex.parse(obj_json.iv);   
-                var key = CryptoJS.PBKDF2(passphrase, salt, { hasher: CryptoJS.algo.SHA512, keySize: 64/8, iterations: 99});
-                var decrypted = CryptoJS.AES.decrypt(encrypted, key, { iv: iv});
-                return decrypted.toString(CryptoJS.enc.Utf8);
-            }
             let current_time = moment().format('YYYY-MM-DD H:m');
-            let meeting_time=CryptoJSAesDecrypt('usman',{salt,iv,ciphertext});
+           
+            let code = "{{ app('request')->input('code') }}";
+            let meeting_time="{{ base64_decode(app('request')->input('code')) }}";
             console.log(meeting_time,current_time);
-
+                 function joinAgain(){
+                    console.log('ff');
+                        webRTC.join(code);
+                    
+                    }
             if(new Date(current_time) >= new Date(meeting_time)){
                 // init web rtc communicationg
                 console.log('meeting valid');
 
-                webRTC.join(ciphertext);
+                webRTC.join(code);
                  let streamConfig = {
                     video: {
                         width: {
@@ -254,9 +274,8 @@
         function closecall() {
             console.log('fd');
             webRTC.closeConnection(function() {
-                $('#video__block').css('display', 'none');
-                $('#meeting__code').css('display', 'flex');
-
+                $('.meeting__room__wrapper').fadeOut();
+                $('.meeting__end').fadeIn();
             });
         }
 
@@ -303,8 +322,16 @@ function swapElements(obj1, obj2) {
 }
                 //end if
             }else{
+
                 console.log('Meeting In valid');
+                $('.loader').fadeOut();
+                $('.schedule__meeting').fadeIn();
+                $('#meeting_time').text(moment(meeting_time).format('DD-MM-YYYY hh:mm A'));
+             
             }
+
+
+
         </script>
     </body>
 </html>
