@@ -2,6 +2,9 @@
 use Illuminate\Http\Request;
 use App\Events\AppointmentAlert;
 
+Route::get('/book-appointment', ['as' => 'book-appointments', 'uses' => 'Admin\AppointmentCalendarController@bookAppointmentLink']);
+Route::get('/availableDays', ['as' => 'check-availableDays', 'uses' => 'Admin\ScheduleSettingController@availableDays'] );
+    
 
 // Login And Forget Password Routes
 Route::group(['namespace' => 'Auth', 'prefix' => 'admin', 'middleware' => ['web']], function () {

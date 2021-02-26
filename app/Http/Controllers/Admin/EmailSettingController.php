@@ -104,7 +104,7 @@ class EmailSettingController extends AdminBaseController
         ]);
 
         $setting         = EmailSetting::first();
-        $smtpResponse = $setting->verifySmtp();
+         $smtpResponse = $setting->verifySmtp();
 
         if ($smtpResponse['success']) {
             Notification::route('mail', $request->test_email)->notify(new TestEmail());

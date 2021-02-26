@@ -15,8 +15,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Auth;
 use Helper;
-
-
+use App\Notifications\SendMeetingLink;
+use Illuminate\Support\Facades\Notification;
 
 class AppointmentCalendarController extends AdminBaseController
 {
@@ -33,12 +33,16 @@ class AppointmentCalendarController extends AdminBaseController
         $this->appointmentMenuActive = 'active';
         $this->bootstrapModalRight = false;
     }
-
+    public function bookAppointmentLink()
+    {
+        return view('admin.public-appointment.index');
+    }
+    
     public function index(Request $request)
     {
         $this->appointmentCalendarActive = 'active';
         $this->allSalesMembers = SalesMember::all();
-    
+        
         return view('admin.appointment-calendar.index', $this->data);
     }
 
@@ -158,7 +162,14 @@ class AppointmentCalendarController extends AdminBaseController
         }
         if ($request->meeting) {
             $appointment->meeting_link	 = $this->CryptoJSAesEncrypt('usman',$appointment->appointment_time);
+            
             $this->meetingLink($appointment->appointment_time);
+            $saleMember = SalesMember::where('id',$request->sales_member_id)->first();
+            $code = json_decode($appointment->meeting_link,true);
+            $url = url("/admin/meeting").'?st='.$code['salt'].'&iv='.$code['iv'].'&clp='.$code['ciphertext']; 
+
+           Notification::route('mail', $saleMember->email)->notify(new SendMeetingLink('Appointment Meeting Link',$url));
+      
         }
         $appointment->sales_member_id = $request->sales_member_id;
         $appointment->save();
@@ -403,10 +414,14 @@ class AppointmentCalendarController extends AdminBaseController
     
     public function store(StoreRequest $request)
     {
+        // return $request->all();
        \DB::beginTransaction();
+
        $user = Auth::user();
        $timezone = $user->timezone;
-        try {
+     
+      
+       try {
             $appointment         = new Appointment();
             $appointment->lead_id = $request->lead_id;
             if ($timezone == "Indian/Mauritius") {
@@ -418,8 +433,19 @@ class AppointmentCalendarController extends AdminBaseController
             $appointment->sales_member_id = $request->sales_member_id;
             $appointment->created_by = $this->user->id;
             if ($request->meeting) {
-                $appointment->meeting_link	 = $this->CryptoJSAesEncrypt('usman',$appointment->appointment_time);
+            
+            $appointment->meeting_link	 = $this->CryptoJSAesEncrypt('usman',$appointment->appointment_time);
+            $saleMember = SalesMember::where('id',$request->sales_member_id)->first();
+     
+            $code = json_decode($appointment->meeting_link,true);
+             $url = url("/admin/meeting").'?st='.$code['salt'].'&iv='.$code['iv'].'&clp='.$code['ciphertext']; 
+
+            Notification::route('mail', $saleMember->email)->notify(new SendMeetingLink('Appointment Meeting Link',$url));
+       
+            
+          
             $this->meetingLink($appointment->appointment_time);
+            
             }
             $appointment->save();
             
@@ -443,6 +469,8 @@ class AppointmentCalendarController extends AdminBaseController
     }
     private function meetingLink($time){
         return $this->CryptoJSAesEncrypt( 'usman',$time);
+       
+
     }
     private function CryptoJSAesEncrypt($passphrase, $plain_text){
 

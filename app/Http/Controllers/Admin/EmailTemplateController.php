@@ -206,7 +206,7 @@ class EmailTemplateController extends AdminBaseController
 
     public function sendMail(SendMailRequest $request, $leadId)
     {
-        // return  $leadId;
+        // return  $request->template_content;
           // TODO - Check Email Setting is verified or not
         try {
             //code...
@@ -223,7 +223,7 @@ class EmailTemplateController extends AdminBaseController
               $fieldNameString = '##'.$leadData->field_name.'##';
               $fieldValue = $leadData->field_value;
   
-               $templateContent = str_replace($fieldNameString, $fieldValue, $templateContent);
+            $templateContent = str_replace($fieldNameString, $fieldValue, $templateContent);
           }
   
              Notification::route('mail', $request->sender_email)->notify(new SendCampaignEmail($templateSubject, $templateContent));

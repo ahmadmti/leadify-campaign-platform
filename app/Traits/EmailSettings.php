@@ -13,16 +13,16 @@ trait EmailSettings
     public function setMailConfigs()
     {
         $emailSetting = EmailSetting::first();
-        $settings = Setting::first();
+       $settings = Setting::first();
 
-        if(config('app.env') !== 'development'){
+        // if(config('app.env') !== 'development'){
             Config::set('mail.driver', $emailSetting->mail_driver);
             Config::set('mail.host', $emailSetting->mail_host);
             Config::set('mail.port', $emailSetting->mail_port);
             Config::set('mail.username', $emailSetting->mail_username);
             Config::set('mail.password', $emailSetting->mail_password);
             Config::set('mail.encryption', $emailSetting->mail_encryption);
-        }
+        // }
 
         Config::set('mail.from.name', $emailSetting->mail_from_name);
         Config::set('mail.from.address', $emailSetting->mail_from_email);
