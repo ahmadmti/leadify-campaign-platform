@@ -145,6 +145,7 @@ class FormController extends AdminBaseController
                                             ->pluck('field_name')
                                             ->toArray();
 
+        
         // Call the same create view for edit
         return view('admin.forms.add-edit', $this->data);
     }

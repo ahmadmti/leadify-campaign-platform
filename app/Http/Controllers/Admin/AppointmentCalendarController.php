@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Auth;
 use Helper;
+use App\Models\LeadData;
 use App\Notifications\SendMeetingLink;
 use Illuminate\Support\Facades\Notification;
 
@@ -33,9 +34,20 @@ class AppointmentCalendarController extends AdminBaseController
         $this->appointmentMenuActive = 'active';
         $this->bootstrapModalRight = false;
     }
-    public function bookAppointmentLink()
+    public function bookAppointmentLink(Request $request,$id)
     {
-        return view('admin.public-appointment.index');
+        
+        $lead = Lead::with('campaign')->whereRaw('md5(id) = ?', $id)->first();
+        
+         $this->lead =$lead;
+         $this->campaign = $lead->campaign;
+        if ($lead->appointment_booked == 0) {
+            return view('admin.public-appointment.index',$this->data);
+        }
+        else{
+            return view('success.success');
+        }
+     
     }
     
     public function index(Request $request)
@@ -157,7 +169,13 @@ class AppointmentCalendarController extends AdminBaseController
         {
             return response()->view($this->forbiddenErrorView);
         }
-
+        $senderEmail = LeadData::where('lead_id', $this->lead->id)
+        ->where(function($query) {
+            $query->whereRaw('LOWER(field_name) = ?', 'email')
+                  ->orWhereRaw('LOWER(field_name) = ?', 'email address');
+        })
+        ->first();
+        $this->senderEmail = $senderEmail ? $senderEmail->field_value : '';
         $this->allSalesMembers = User::all();
 
         return view('admin.appointment-calendar.add-edit', $this->data);
@@ -387,19 +405,26 @@ class AppointmentCalendarController extends AdminBaseController
             }
         }
         if ($request->meeting) {
-            // $appointment->meeting_link	 = $this->CryptoJSAesEncrypt('usman',$appointment->appointment_time);
+            $email = LeadData::where('lead_id',$request->lead_id)->where('field_name','Email')->first();
             
-            // $this->meetingLink($appointment->appointment_time);
-            $saleMember = SalesMember::where('id',$request->sales_member_id)->first();
-            $code = base64_encode($appointment->meeting_link);
-            $url = url("/admin/meeting").'?code'.$code; 
-            // $code = json_decode($appointment->meeting_link,true);
-            // $url = url("/admin/meeting").'?st='.$code['salt'].'&iv='.$code['iv'].'&clp='.$code['ciphertext']; 
-
-           Notification::route('mail', $saleMember->email)->notify(new SendMeetingLink('Appointment Meeting Link',$url));
-           if ($user->email != null) {
-            Notification::route('mail', $user->email)->notify(new SendMeetingLink('Appointment Meeting Link',$url));
-        }
+            $sender_email = $email->field_value;
+            if ($sender_email != null) {
+                $saleMember = SalesMember::where('id',$request->sales_member_id)->first();
+                $code = base64_encode($appointment->appointment_time);
+                $url = url("/admin/meeting").'?code='.$code; 
+           
+    
+               Notification::route('mail', $saleMember->email)->notify(new SendMeetingLink('Appointment Meeting Link',$url));
+               if ($user->email != null) {
+                Notification::route('mail', $user->email)->notify(new SendMeetingLink('Appointment Meeting Link',$url));
+            }
+            Notification::route('mail', $sender_email)->notify(new SendMeetingLink('Appointment Meeting Link',$url));
+            
+            }
+            else {
+                return response()->json(['status'=>'error']);
+            }
+     
         }
         $appointment->sales_member_id = $request->sales_member_id;
         $appointment->save();
@@ -438,25 +463,34 @@ class AppointmentCalendarController extends AdminBaseController
             $appointment->sales_member_id = $request->sales_member_id;
             $appointment->created_by = $this->user->id;
             if ($request->meeting) {
-           
-         
-            // $appointment->meeting_link	 = $this->CryptoJSAesEncrypt('usman',$appointment->appointment_time);
-            $appointment->meeting_link	 = base64_encode($appointment->appointment_time);
-            $saleMember = SalesMember::where('id',$request->sales_member_id)->first();
-     
-            $code = base64_encode($appointment->meeting_link);
-            $url = url("/admin/meeting").'?code'.$code; 
-           
-            //  $url = url("/admin/meeting").'?st='.$code['salt'].'&iv='.$code['iv'].'&clp='.$code['ciphertext']; 
-
-            Notification::route('mail', $saleMember->email)->notify(new SendMeetingLink('Appointment Meeting Link',$url));
+                if ($request->public) {
+                    $email = LeadData::where('lead_id',$request->lead_id)->where('field_name','Email')->first();
             
-            if ($user->email != null) {
-                Notification::route('mail', $user->email)->notify(new SendMeetingLink('Appointment Meeting Link',$url));
-            }
-            
+                    $sender_email = $email->field_value;
+                }
+                else{
+                    $sender_email = $request->sender_email;
+                }
+                if ($sender_email != null) {
+                $code = base64_encode($appointment->appointment_time);
           
-            // $this->meetingLink($appointment->appointment_time);
+                $appointment->meeting_link	 =$code;
+                $saleMember = SalesMember::where('id',$request->sales_member_id)->first();
+        
+         
+                $url = url("/admin/meeting").'?code='.$code; 
+           
+                Notification::route('mail', $saleMember->email)->notify(new SendMeetingLink('Appointment Meeting Link',$url));
+                
+                if ($user->email != null) {
+                    Notification::route('mail', $user->email)->notify(new SendMeetingLink('Appointment Meeting Link',$url));
+                }
+            
+                    Notification::route('mail', $sender_email)->notify(new SendMeetingLink('Appointment Meeting Link',$url));
+                }
+                else {
+                    return response()->json(['status'=>'error']);
+                }
             
             }
             $appointment->save();

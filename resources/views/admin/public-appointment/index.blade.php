@@ -131,13 +131,15 @@
 <body>
 
 {!! Form::open(['url' => '','autocomplete'=>'off','id'=>'appointment-edit-form']) !!}
-
+<input type="hidden" name="lead_id" value="{{ $lead->id }}" />
+<input type="hidden" name="public" value="public" />
 <div class="modal-body">
     <div class="loader"></div>
     <div class="form-group row">
         <label class="col-sm-3 col-form-label">@lang('app.campaign')</label>
         <div class="col-sm-9">
-            {{ $lead->campaign->name ?? ''}}
+          
+        {{$campaign->name}}
         </div>
       
     </div>
@@ -201,12 +203,12 @@
         onclick="addEditAppointment({{ $appointment->id ?? '' }});return false"><i class="fas fa-check"></i>
         @if(isset($appointment->id) && $appointment->id != '') @lang('app.update') @else @lang('app.save')
         @endif</button>
-    @if(isset($appointment->id))
+    <!-- @if(isset($appointment->id))
     <button id="cancelAppointmentButton" type="button" class="btn btn-icon icon-left btn-danger"
         onclick="deleteAppointment({{ $appointment->id ?? '' }});return false"><i class="fas fa-trash"></i>
         @lang('module_campaign.deleteAppointment')</button>
     @endif
-   
+    -->
 </div>
 
 {{Form::close()}}
@@ -222,23 +224,33 @@
 <script src="{{ asset('assets/js/ajax-helper/admin/helper.js') }}"></script>
 
 <script>
-    function saveAndExit() {
-        var url = "{{ route('callmanager.save-lead') }}";
+    function addEditAppointment(id) {
 
-        $.easyAjax({
-            type: 'POST',
-            url: url,
-            file: true,
-            container: "#lead-action-form",
-            messagePosition: "toastr",
-            success: function(response) {
-                if(response.status == 'success')
-                {
-                    window.location.href = "{{ route('admin.callmanager.index') }}";
-                }
-            }
-        });
+if(typeof id != 'undefined'){
+    var url  ="{{route('admin.appointments.update',':id')}}";
+    url      = url.replace(':id',id);
+}
+
+if (typeof id == 'undefined'){
+    url = "{{ url('/appointments') }}";
+}
+
+$.easyAjax({
+    type: 'POST',
+    url: url,
+    file: true,
+    container: "#appointment-edit-form",
+    messagePosition: "toastr",
+    success: function(response) {
+        if (response.status == "success") {
+            $('#appointment-view-div').html(response.data.html);
+            $('#addEditModal').modal('hide');
+            location.reload();
+        }
+      
     }
+});
+}
 
 $(function() {
     $('.calendar-container').calendar();
@@ -256,7 +268,7 @@ function availableFunction() {
         type: 'GET',
         url: url,
         data:{
-            'campaign_id' : "3",
+            'campaign_id' : "{{$campaign->id}}",
         },
         messagePosition: "toastr",
         success: function(response) {
@@ -476,7 +488,7 @@ $('#appointment_time').one("mouseover", function() {
         type: 'GET',
         url: url,
         data:{
-            'campaign_id' : "3",
+            'campaign_id' : "{{$campaign->id}}",
         },
         messagePosition: "toastr",
         success: function(response) {
@@ -549,7 +561,7 @@ $('#appointment_time').one("mouseover", function() {
                 $('.month-label').text(february);
             }
             if($('.month-label').text()=='march'){
-                var february =$('<div>{{trans('module_lead.march')}}</div>').text()
+                var march =$('<div>{{trans('module_lead.march')}}</div>').text()
                 $('.month-label').text(march);
             }
             if($('.month-label').text()=='april'){
@@ -627,7 +639,7 @@ $('#button').on('click', '.time', function() {
             "_token": "{{ csrf_token() }}",
             'date': $('#date').val(),
             'time': $(this).attr('id'),
-            'campaign_id' : "3",
+            'campaign_id' : "{{$campaign->id}}",
         },
         success: function(response) {
 
@@ -688,7 +700,7 @@ $('.calendar-container').calendar({
             data: {
                 "_token": "{{ csrf_token() }}",
                 'date': $('#date').val(),
-                'campaign_id' : "3",
+                'campaign_id' : "{{$campaign->id}}",
             },
             success: function(response) {
                 $("#button button").each(function() {

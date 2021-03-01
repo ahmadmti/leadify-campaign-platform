@@ -38,7 +38,8 @@
                                 <tr>
                                     <td class="font-weight-600"><a href="{{ route('admin.campaigns.show', md5($bookedAppointment->campaign_id)) }}">{{ $bookedAppointment->campaign_name }}</a></td>
                                     <td>{{ trim($bookedAppointment->first_name .' ' . $bookedAppointment->last_name) }}</td>
-                                    <td>{{ $bookedAppointment->appointment_time->timezone($user->timezone)->format($user->date_format .' ' . $user->time_format) }}</td>
+                                    <!-- <td>{{ $bookedAppointment->appointment_time->timezone($user->timezone)->format($user->date_format .' ' . $user->time_format) }}</td> -->
+                                    <td>{{ $bookedAppointment->appointment_time }}</td> 
                                     <td>
                                                                
                                     @if($bookedAppointment->meeting_link)    

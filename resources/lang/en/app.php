@@ -80,4 +80,5 @@ return array (
   'step2' => 'Step 2',
   'step3' => 'Step 3',
   'install' => 'Install',
+  'ok' => 'ok',
 );

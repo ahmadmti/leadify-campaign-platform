@@ -132,7 +132,12 @@
             </select>
         </div>
     </div>
-
+    <div class="form-group row" style="display:none">
+        <label class="col-sm-3 col-form-label">@lang('module_email_template.senderEmail')</label>
+        <div class="col-sm-9">
+            <input type="text" class="form-control" id="sender_email" name="sender_email" value="{{ $senderEmail ?? '' }}">
+        </div>
+    </div>
     <div class="form-group row">
     <label class="col-sm-3 col-form-label"></label>
     <div class="col-sm-9">
@@ -291,7 +296,7 @@ function availableFunction() {
                 $('.month-label').text(february);
             }
             if($('.month-label').text()=='march'){
-                var february =$('<div>{{trans('module_lead.march')}}</div>').text()
+                var march =$('<div>{{trans('module_lead.march')}}</div>').text()
                 $('.month-label').text(march);
             }
             if($('.month-label').text()=='april'){
@@ -469,7 +474,7 @@ $('#appointment_time').one("mouseover", function() {
                 $('.month-label').text(february);
             }
             if($('.month-label').text()=='march'){
-                var february =$('<div>{{trans('module_lead.march')}}</div>').text()
+                var march =$('<div>{{trans('module_lead.march')}}</div>').text()
                 $('.month-label').text(march);
             }
             if($('.month-label').text()=='april'){

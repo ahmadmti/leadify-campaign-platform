@@ -347,7 +347,7 @@ class CallManagerController extends AdminBaseController
                                 ->count();
         $this->leadWithData = $leadWithData;
         $this->leadWithData1 = $leadWithData1;
-
+    
         // Lead Call Log
         $callLog = new CallLog();
         $callLog->lead_id = $lead->id;
@@ -355,7 +355,7 @@ class CallManagerController extends AdminBaseController
         $callLog->started_on = $lead->time_taken ?? 0;
         $callLog->time_taken = 0;
         $callLog->save();
-
+       
         $this->callLog = $callLog;
         return view('admin.callmanager.startlead', $this->data);
     }

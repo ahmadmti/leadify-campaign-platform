@@ -168,6 +168,7 @@ class EmailTemplateController extends AdminBaseController
 
     private function  storeAndUpdate($emailTemplate, $request)
     {
+     
         $emailTemplate->name   = $request->template_name;
         $emailTemplate->subject   = $request->template_subject;
         $emailTemplate->content   = $request->template_content;
@@ -206,6 +207,7 @@ class EmailTemplateController extends AdminBaseController
 
     public function sendMail(SendMailRequest $request, $leadId)
     {
+        // return $request->all();
         // return  $request->template_content;
           // TODO - Check Email Setting is verified or not
         try {
@@ -229,8 +231,8 @@ class EmailTemplateController extends AdminBaseController
              Notification::route('mail', $request->sender_email)->notify(new SendCampaignEmail($templateSubject, $templateContent));
   
           return Reply::success('module_email_template.emailSentSuccessfully');
-        } catch (\Exception $th ) {
+        }catch (\Exception $th ){
             return $th;
-           }
+        }
     }
 }

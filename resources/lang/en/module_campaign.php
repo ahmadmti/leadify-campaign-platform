@@ -72,4 +72,5 @@ return array (
     'callHistory' => 'Call History',
     'sendMail' => 'Do you want to send meeting link?',
     'meeting_link' => 'Meeting Link',
+    'clientEmailText'=>'Please Enter Client Email Id',
 );

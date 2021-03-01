@@ -1,10 +1,12 @@
 <?php
 use Illuminate\Http\Request;
-use App\Events\AppointmentAlert;
 
-Route::get('/book-appointment', ['as' => 'book-appointments', 'uses' => 'Admin\AppointmentCalendarController@bookAppointmentLink']);
+
+Route::get('/book-appointment/{id}', ['as' => 'book-appointments', 'uses' => 'Admin\AppointmentCalendarController@bookAppointmentLink']);
 Route::get('/availableDays', ['as' => 'check-availableDays', 'uses' => 'Admin\ScheduleSettingController@availableDays'] );
-Route::post('/callmanager/save', ['as' => 'callmanager.save-lead-time', 'uses' => 'CallManagerController@saveLeadTime']);
+
+Route::post('/appointments', 'Admin\AppointmentCalendarController@store');
+    
 
 // Login And Forget Password Routes
 Route::group(['namespace' => 'Auth', 'prefix' => 'admin', 'middleware' => ['web']], function () {

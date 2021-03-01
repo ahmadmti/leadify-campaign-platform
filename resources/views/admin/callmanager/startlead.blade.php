@@ -253,8 +253,9 @@
 <script src="{{ asset('assets/modules/bootstrap-timepicker/js/bootstrap-timepicker.min.js') }}"></script>
 <script src="{{ asset('assets/modules/summernote/summernote-bs4.js') }}"></script>
 <script>
-
-    var timer = new easytimer.Timer();
+$('#custom_field_5').val('https://booking.geeklone.com/book-appointment/'+'{{md5($lead->id)}}');
+$('#custom_field_5').attr('disabled');   
+var timer = new easytimer.Timer();
     var timeTaken = {{ $lead->time_taken ?? 0 }};
     timer.start({
         startValues: {seconds: timeTaken}
@@ -405,6 +406,19 @@
                 if (response.status == "success") {
                     $('#appointment-view-div').html(response.data.html);
                     $('#addEditModal').modal('hide');
+                }
+                if (response.status == "error") {
+                    swal({
+                        title: "{{ trans('module_campaign.clientEmailText') }}",
+                      
+                        dangerMode: true,
+                        icon: 'warning',
+                        closeOnClickOutside: false,
+                        buttons: {
+                            cancel: "{{ trans('app.ok') }}",
+                        
+                        },
+                    })
                 }
             }
         });
