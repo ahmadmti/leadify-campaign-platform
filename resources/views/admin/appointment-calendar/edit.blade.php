@@ -86,6 +86,8 @@
 {!! Form::open(['url' => '','autocomplete'=>'off','id'=>'appointment-edit-form']) !!}
 @if(isset($appointment->id)) <input type="hidden" name="_method" value="PUT"> @endif
 <input type="hidden" name="lead_id" value="{{ $lead->id }}" />
+<input type="hidden" name="campaign_id" value="{{ $lead->campaign->id }}" />
+
 <div class="modal-body">
     <div class="loader"></div>
     <div class="form-group row">

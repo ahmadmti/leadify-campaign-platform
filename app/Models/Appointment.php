@@ -15,6 +15,10 @@ class Appointment extends Model
     {
         return $this->hasOne('App\Models\SalesMember',  'id','sales_member_id');
     }
+    public function user()
+    {
+        return $this->hasOne('App\Models\User',  'id','created_by');
+    }
     public function lead()
     {
         return $this->hasOne(Lead::class, 'id', 'lead_id');

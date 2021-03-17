@@ -38,5 +38,6 @@ return array (
   'yesUpdateIt' => 'Yes, update it!',
   'fileDeleted' => 'File deleted successfully.',
   'noCallHistoryFound' => 'No call history found for this lead.',
+  'noVideoCallHistoryFound'=>'No Video Call history found for this campaign.',
   'csvFieldImportedSuccessfully' => 'CSV field imported successfully',
 );

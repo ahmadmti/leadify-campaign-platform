@@ -257,15 +257,24 @@ class CallManagerController extends AdminBaseController
 
     public function startLead($id)
     {
+       
         $this->bootstrapModalRight = false;
         $this->bootstrapModalSize = 'lg';
         $this->showFooter = false;
 
+        // $lead = Lead::where('')
+       
         // TODO - check this lead comes in campaign for which current logged in user is member or not
         $lead = Lead::with(['callLogs' => function ($query) {
             $query->orderBy('id', 'desc');
         }])->whereRaw('md5(id) = ?', $id)->first();
         $campaign = $lead->campaign;
+         $this->appointments = Appointment::with('salesMember:id,first_name,last_name','user:id,first_name,last_name')->where('campaign_id', $campaign->id)->get();
+        // $this->appointments = Appointment::select('sales_members.first_name', 'sales_members.last_name', 'appointments.appointment_time', 'appointments.sales_member_id', 'appointments.id', 'appointments.lead_id')
+        // ->join('leads', 'leads.id', '=', 'appointments.lead_id')
+        // ->join('sales_members', 'sales_members.id', '=', 'appointments.sales_member_id')
+        // ->where('campaign_id', $campaign->id);
+
         $this->emailTemplates = EmailTemplate::where('created_by', $this->user->id)
                                              ->orWhere('shareable', 1)
                                              ->get();

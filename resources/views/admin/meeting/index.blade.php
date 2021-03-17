@@ -6,6 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
         <script src="https://kit.fontawesome.com/57401d7284.js" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
         <style>
             .schedule__meeting{
                 display: none;
@@ -13,6 +14,9 @@
             .loader .spinner-grow{
                 width: 6rem;
                 height: 6rem;
+            }
+            .watermark{
+                display: none;
             }
             .loader{
                 width: 100%;
@@ -52,31 +56,40 @@
         }
         
         .player_controller_box {
-            height: 13vh;
+            position: relative;
+            height: 15vh;
             margin: 0 auto;
             width: 80%;
             /* background-color: red; */
             display: flex;
-            justify-content: space-around;
+            justify-content: center;
             align-items: center;
         }
-        
+        .screen_swtich__controll{
+            position: absolute;
+            right: 0;
+        }
         .controller__icon {
-            font-size: 1.7rem;
+            /* font-size: 1.7rem; */
             /* padding: 13px 26px; */
-            width: 65px;
-            height: 60px;
-            border: 1px solid #eee;
+            /* width: 50px;
+            height: 50px; */
+            padding: 5px;
+            margin: 0 10px;
+            border: 1px solid #dadce0;
             display: flex;
             justify-content: center;
             align-items: center;
             border-radius: 50%;
             box-shadow: 1px 1px 20px 3px #eee;
         }
-        
+        .chat__bar_wrapper{
+            width: 0px;
+        }
         .controller__icon:hover {
             background-color: #eee;
             cursor: pointer;
+              box-shadow: 0px 4px 20px 1px #dadce0;
         }
         
         .call__close_controll_phone_icon {
@@ -119,6 +132,122 @@
             align-items: center;
             height: 100vh;
         }
+        .fa-desktop{
+            color: #eee;
+        }
+        .room__meeting{
+            height: 85vh;
+            display: none;
+        }
+.meeting__end{
+	display:none;
+}
+.video_svg_load{
+    padding:11px;
+}
+.mic_muted,.video_unmuted{
+    display: none;
+}
+.screen_share_bd,.chat__setter{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+.text__alert,.text__chat{
+    font-size: 12px;
+    font-weight: bold;
+    margin: 0;
+
+    color:#3c4043; 
+}
+.widget__wrapper{
+        position: absolute;
+    right: -8px;
+    /* color: white; */
+ 
+    top: 50%;
+    display: flex;
+   
+    transform: translate(-50%, 50%);
+}
+
+.widget__box{
+        padding: 5px;
+    background: white;
+    border-radius: 4px;
+}
+.chat__bar_wrapper{
+    overflow: hidden;
+    box-shadow:-4px 0px 17px 0px #eee;
+    position: absolute;
+    right: 0;
+    background: white;
+    /* width: 25%; */
+    height: 85vh;
+}
+.chat__body_content{
+    height: 73vh;
+    overflow-y: scroll;
+}
+.toggle_chat__box{
+    font-weight: bold;
+}
+.chat__title{
+        border-bottom: 1px solid #eee;
+    box-shadow: 0px 3px 20px 0px #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 13px;
+}
+.chat_Sender_res{    display: flex;
+  
+    align-self: center;
+}
+.message_input{
+    border: none;
+    border-bottom: 1px solid #eee;
+    width: 85%;
+    outline: none;
+}
+.btn-tasker:hover{
+        cursor: pointer;
+        border-radius:50%;
+}
+.messages_block{
+    padding: 5px 10px;
+}
+.sent{
+     clear: both;
+        padding: 6px;
+    background: #eee;
+    width: 75%;
+    float: right;
+    border-radius: 7px;
+}
+.receive{
+    clear: both;
+    border-radius: 7px;
+     padding: 6px;
+     background: #eee;
+      width: 75%;
+}
+.chat__box__toggle{
+    position: absolute;
+    left: 0;
+}
+.chat__setter:hover,.screen_share_bd:hover{
+    cursor: pointer;
+}
+.logo_overlap{
+        width: 73px;
+    height: 70px;
+    position: fixed;
+    background: transparent;
+    left: 32px;
+    z-index: 111;
+}
         </style>
     </head>
     <body>
@@ -132,60 +261,70 @@
        </div>
        {{-- loader --}}
 
+
+
+
+
        {{-- meeting room --}}
-       <div class="meeting__room__wrapper">
-            <div class="meeting__room__box">
-                  <div id="video__block">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="xl__wrapper">
-                                <div class="xl__box">
-                                    <video ondblclick="doSwap()" poster="http://doc-le-guide-sante.com/assets/uploads/companies/leadify.png" class="video__stream__player" id="remote-video" autoplay />
-                                </div>
-                                <div class="sm__wrapper">
-                                    <div class="sm__box">
-                                        <video ondblclick="doSwap()"  class="video__stream__player sm_player" id="local-video" autoplay />
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Control Bar  -->
+      
+     
+       <div class="room__meeting">
+        <div class="logo_overlap"></div>
+   
+        {{-- chat bar --}}
+              <div id='meeting__container'></div>
+            <!-- Control Bar  -->
                             <div class="player__controlls_wrapper">
                                 <div class="player_controller_box">
                                     <div class="mic_controll">
-                                        <div class="controller__icon " onclick="audio()">
-                                            <i class="fas fa-microphone"></i>
+                                        <div class="controller__icon " id='btnCustomMic'>
+                                            <svg class="mic_unmuted"  viewBox="0 0 48 48" width="48" height="48" preserveAspectRatio="xMidYMid meet" style="width: 100%; height: 100%; transform: translate3d(0px, 0px, 0px);"><defs><clipPath id="__lottie_element_2"><rect width="48" height="48" x="0" y="0"></rect></clipPath><mask id="__lottie_element_4"><rect fill="#ffffff" width="48" height="48" transform="matrix(0.7407407164573669,0,0,0.7407407164573669,-17.77777671813965,-17.77777671813965)"></rect><path fill="#000000" clip-rule="nonzero" d=" M-7.769999980926514,-10.111000061035156 C-7.769999980926514,-10.111000061035156 -9.187000274658203,-8.694000244140625 -9.187000274658203,-8.694000244140625 C-9.187000274658203,-8.694000244140625 -9.182999610900879,-8.696000099182129 -9.182999610900879,-8.696000099182129 C-9.182999610900879,-8.696000099182129 -7.765999794006348,-10.11299991607666 -7.765999794006348,-10.11299991607666 C-7.765999794006348,-10.11299991607666 -7.769999980926514,-10.111000061035156 -7.769999980926514,-10.111000061035156" fill-opacity="1"></path></mask></defs><g clip-path="url(#__lottie_element_2)"><g mask="url(#__lottie_element_4)" transform="matrix(1.350000023841858,0,0,1.350000023841858,24,24)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><g class="stroke KIzDle" opacity="0" transform="matrix(1,0,0,1,0,0)"><path class="fill bkbMM" fill="rgb(95,99,104)" fill-opacity="1" d=" M-9.187999725341797,-8.692999839782715 C-9.187999725341797,-8.692999839782715 -10.604999542236328,-7.276000022888184 -10.604999542236328,-7.276000022888184 C-10.604999542236328,-7.276000022888184 -10.604999542236328,-7.276000022888184 -10.604999542236328,-7.276000022888184 C-10.604999542236328,-7.276000022888184 -9.187999725341797,-8.692999839782715 -9.187999725341797,-8.692999839782715 C-9.187999725341797,-8.692999839782715 -9.187999725341797,-8.692999839782715 -9.187999725341797,-8.692999839782715z"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path class="fill bkbMM" fill="rgb(95,99,104)" fill-opacity="1" d=" M5,-0.5 C5,2.259999990463257 2.759999990463257,4.5 0,4.5 C-2.759999990463257,4.5 -5,2.259999990463257 -5,-0.5 C-5,-0.5 -7,-0.5 -7,-0.5 C-7,3.0299999713897705 -4.389999866485596,5.929999828338623 -1,6.420000076293945 C-1,6.420000076293945 -1,9.5 -1,9.5 C-1,9.5 1,9.5 1,9.5 C1,9.5 1,6.420000076293945 1,6.420000076293945 C4.389999866485596,5.929999828338623 7,3.0299999713897705 7,-0.5 C7,-0.5 5,-0.5 5,-0.5z M-1,-6.5 C-1,-7.050000190734863 -0.550000011920929,-7.5 0,-7.5 C0.550000011920929,-7.5 1,-7.050000190734863 1,-6.5 C1,-6.5 1,-0.5 1,-0.5 C1,0.05000000074505806 0.550000011920929,0.5 0,0.5 C-0.550000011920929,0.5 -1,0.05000000074505806 -1,-0.5 C-1,-0.5 -1,-6.5 -1,-6.5z M0,2.5 C1.659999966621399,2.5 3,1.159999966621399 3,-0.5 C3,-0.5 3,-6.5 3,-6.5 C3,-8.15999984741211 1.659999966621399,-9.5 0,-9.5 C-1.659999966621399,-9.5 -3,-8.15999984741211 -3,-6.5 C-3,-6.5 -3,-0.5 -3,-0.5 C-3,1.159999966621399 -1.659999966621399,2.5 0,2.5z"></path></g></g></g></g></svg>
+                                            <svg class="mic_muted" viewBox="0 0 48 48" width="48" height="48" preserveAspectRatio="xMidYMid meet" style="width: 100%; height: 100%; transform: translate3d(0px, 0px, 0px);"><defs><clipPath id="__lottie_element_77"><rect width="48" height="48" x="0" y="0"></rect></clipPath><mask id="__lottie_element_79"><rect fill="#ffffff" width="48" height="48" transform="matrix(0.7407407164573669,0,0,0.7407407164573669,-17.77777671813965,-17.77777671813965)"></rect><path fill="#000000" clip-rule="nonzero" d=" M-7.769999980926514,-10.111000061035156 C-7.769999980926514,-10.111000061035156 -9.187000274658203,-8.694000244140625 -9.187000274658203,-8.694000244140625 C-9.187000274658203,-8.694000244140625 9.204000473022461,9.696999549865723 9.204000473022461,9.696999549865723 C9.204000473022461,9.696999549865723 10.621000289916992,8.279999732971191 10.621000289916992,8.279999732971191 C10.621000289916992,8.279999732971191 -7.769999980926514,-10.111000061035156 -7.769999980926514,-10.111000061035156" fill-opacity="1"></path></mask></defs><g clip-path="url(#__lottie_element_77)"><g mask="url(#__lottie_element_79)" transform="matrix(1.350000023841858,0,0,1.350000023841858,24,24)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><g class="stroke KIzDle" opacity="1" transform="matrix(1,0,0,1,0,0)"><path class="fill bkbMM" fill="rgb(255,255,255)" fill-opacity="1" d=" M-9.187999725341797,-8.692999839782715 C-9.187999725341797,-8.692999839782715 -10.604999542236328,-7.276000022888184 -10.604999542236328,-7.276000022888184 C-10.604999542236328,-7.276000022888184 7.783999919891357,11.112000465393066 7.783999919891357,11.112000465393066 C7.783999919891357,11.112000465393066 9.199999809265137,9.694999694824219 9.199999809265137,9.694999694824219 C9.199999809265137,9.694999694824219 -9.187999725341797,-8.692999839782715 -9.187999725341797,-8.692999839782715z"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path class="fill bkbMM" fill="rgb(255,255,255)" fill-opacity="1" d=" M5,-0.5 C5,2.259999990463257 2.759999990463257,4.5 0,4.5 C-2.759999990463257,4.5 -5,2.259999990463257 -5,-0.5 C-5,-0.5 -7,-0.5 -7,-0.5 C-7,3.0299999713897705 -4.389999866485596,5.929999828338623 -1,6.420000076293945 C-1,6.420000076293945 -1,9.5 -1,9.5 C-1,9.5 1,9.5 1,9.5 C1,9.5 1,6.420000076293945 1,6.420000076293945 C4.389999866485596,5.929999828338623 7,3.0299999713897705 7,-0.5 C7,-0.5 5,-0.5 5,-0.5z M-1,-6.5 C-1,-7.050000190734863 -0.550000011920929,-7.5 0,-7.5 C0.550000011920929,-7.5 1,-7.050000190734863 1,-6.5 C1,-6.5 1,-0.5 1,-0.5 C1,0.05000000074505806 0.550000011920929,0.5 0,0.5 C-0.550000011920929,0.5 -1,0.05000000074505806 -1,-0.5 C-1,-0.5 -1,-6.5 -1,-6.5z M0,2.5 C1.659999966621399,2.5 3,1.159999966621399 3,-0.5 C3,-0.5 3,-6.5 3,-6.5 C3,-8.15999984741211 1.659999966621399,-9.5 0,-9.5 C-1.659999966621399,-9.5 -3,-8.15999984741211 -3,-6.5 C-3,-6.5 -3,-0.5 -3,-0.5 C-3,1.159999966621399 -1.659999966621399,2.5 0,2.5z"></path></g></g></g></g></svg>
                                         </div>
                                     </div>
                                     <div class="call__close_controll">
-                                        <div class="controller__icon overlay__round" onclick="closecall()">
-                                            <i class="fas fa-phone-alt call__close_controll_phone_icon"></i>
+                                        <div class="controller__icon video_svg_load" id='btnHangup'>
+                                        <svg  fill="red" width="35" height="35" viewBox="0 0 24 24 " ><path d="M23.62 11.27c-2.03-1.72-4.46-3-7.12-3.69C15.06 7.21 13.56 7 12 7s-3.06.21-4.5.58c-2.66.69-5.08 1.96-7.12 3.69-.45.38-.5 1.07-.08 1.49l.67.67 2.26 2.26c.33.33.85.39 1.25.13l2.56-1.64c.29-.18.46-.5.46-.84V9.65C8.93 9.23 10.44 9 12 9s3.07.23 4.5.65v3.68c0 .34.17.66.46.84l2.56 1.64c.4.25.92.2 1.25-.13l2.26-2.26.67-.67c.41-.41.37-1.1-.08-1.48z"></path></svg>
                                         </div>
                                     </div>
                                     <div class="video__controll">
-                                        <div class="controller__icon  overlay__round" onclick="videoToggle()">
-                                            <i class="fas fa-video"></i>
+                                        <div class="controller__icon "  id='btnCustomCamera'>
+                                            <svg class="video_unmuted" viewBox="0 0 48 48" width="48" height="48" preserveAspectRatio="xMidYMid meet" style="width: 100%; height: 100%; transform: translate3d(0px, 0px, 0px);"><defs><clipPath id="__lottie_element_72"><rect width="48" height="48" x="0" y="0"></rect></clipPath><mask id="__lottie_element_74"><rect fill="#ffffff" width="48" height="48" transform="matrix(0.7407407164573669,0,0,0.7407407164573669,-17.77777671813965,-17.77777671813965)"></rect><path fill="#000000" clip-rule="nonzero" d=" M-7.769999980926514,-10.598999977111816 C-7.769999980926514,-10.598999977111816 -9.1899995803833,-9.189000129699707 -9.1899995803833,-9.189000129699707 C-9.1899995803833,-9.189000129699707 -9.185999870300293,-9.192000389099121 -9.185999870300293,-9.192000389099121 C-9.185999870300293,-9.192000389099121 -7.769000053405762,-10.600000381469727 -7.769000053405762,-10.600000381469727 C-7.769000053405762,-10.600000381469727 -7.769999980926514,-10.598999977111816 -7.769999980926514,-10.598999977111816" fill-opacity="1"></path></mask></defs><g clip-path="url(#__lottie_element_72)"><g mask="url(#__lottie_element_74)" transform="matrix(1.350000023841858,0,0,1.350000023841858,24,24)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><g class="stroke KIzDle" opacity="0" transform="matrix(1,0,0,1,0,0)"><path class="fill bkbMM" fill="rgb(95,99,104)" fill-opacity="1" d=" M-9.1899995803833,-9.189000129699707 C-9.1899995803833,-9.189000129699707 -10.609999656677246,-7.7789998054504395 -10.609999656677246,-7.7789998054504395 C-10.609999656677246,-7.7789998054504395 -10.607999801635742,-7.78000020980835 -10.607999801635742,-7.78000020980835 C-10.607999801635742,-7.78000020980835 -9.187999725341797,-9.187999725341797 -9.187999725341797,-9.187999725341797 C-9.187999725341797,-9.187999725341797 -9.1899995803833,-9.189000129699707 -9.1899995803833,-9.189000129699707z"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path class="fill bkbMM" fill="rgb(95,99,104)" fill-opacity="1" d=" M4,-2.309999942779541 C4,-2.309999942779541 4,6 4,6 C4,6 -8,6 -8,6 C-8,6 -8,-6 -8,-6 C-8,-6 4,-6 4,-6 C4,-6 4,-2.309999942779541 4,-2.309999942779541z M6,-1.5199999809265137 C6,-1.5199999809265137 6,-6 6,-6 C6,-7.099999904632568 5.099999904632568,-8 4,-8 C4,-8 -8,-8 -8,-8 C-9.100000381469727,-8 -10,-7.099999904632568 -10,-6 C-10,-6 -10,6 -10,6 C-10,7.099999904632568 -9.100000381469727,8 -8,8 C-8,8 4,8 4,8 C5.099999904632568,8 6,7.099999904632568 6,6 C6,6 6,1.5199999809265137 6,1.5199999809265137 C6,1.5199999809265137 10,5.5 10,5.5 C10,5.5 10,-5.5 10,-5.5 C10,-5.5 6,-1.5199999809265137 6,-1.5199999809265137z"></path></g></g></g></g></svg>
+                                            
+                                            <svg class="video_muted" viewBox="0 0 48 48" width="48" height="48" preserveAspectRatio="xMidYMid meet" style="width: 100%; height: 100%; transform: translate3d(0px, 0px, 0px);"><defs><clipPath id="__lottie_element_87"><rect width="48" height="48" x="0" y="0"></rect></clipPath><mask id="__lottie_element_89"><rect fill="#ffffff" width="48" height="48" transform="matrix(0.7407407164573669,0,0,0.7407407164573669,-17.77777671813965,-17.77777671813965)"></rect><path fill="#000000" clip-rule="nonzero" d=" M-7.769999980926514,-10.598999977111816 C-7.769999980926514,-10.598999977111816 -9.1899995803833,-9.189000129699707 -9.1899995803833,-9.189000129699707 C-9.1899995803833,-9.189000129699707 9.199999809265137,9.201000213623047 9.199999809265137,9.201000213623047 C9.199999809265137,9.201000213623047 10.609999656677246,7.790999889373779 10.609999656677246,7.790999889373779 C10.609999656677246,7.790999889373779 -7.769999980926514,-10.598999977111816 -7.769999980926514,-10.598999977111816" fill-opacity="1"></path></mask></defs><g clip-path="url(#__lottie_element_87)"><g mask="url(#__lottie_element_89)" transform="matrix(1.350000023841858,0,0,1.350000023841858,24,24)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><g class="stroke KIzDle" opacity="1" transform="matrix(1,0,0,1,0,0)"><path class="fill bkbMM" fill="rgb(255,255,255)" fill-opacity="1" d=" M-9.1899995803833,-9.189000129699707 C-9.1899995803833,-9.189000129699707 -10.609999656677246,-7.7789998054504395 -10.609999656677246,-7.7789998054504395 C-10.609999656677246,-7.7789998054504395 7.78000020980835,10.611000061035156 7.78000020980835,10.611000061035156 C7.78000020980835,10.611000061035156 9.1899995803833,9.201000213623047 9.1899995803833,9.201000213623047 C9.1899995803833,9.201000213623047 -9.1899995803833,-9.189000129699707 -9.1899995803833,-9.189000129699707z"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path class="fill bkbMM" fill="rgb(255,255,255)" fill-opacity="1" d=" M4,-2.309999942779541 C4,-2.309999942779541 4,6 4,6 C4,6 -8,6 -8,6 C-8,6 -8,-6 -8,-6 C-8,-6 4,-6 4,-6 C4,-6 4,-2.309999942779541 4,-2.309999942779541z M6,-1.5199999809265137 C6,-1.5199999809265137 6,-6 6,-6 C6,-7.099999904632568 5.099999904632568,-8 4,-8 C4,-8 -8,-8 -8,-8 C-9.100000381469727,-8 -10,-7.099999904632568 -10,-6 C-10,-6 -10,6 -10,6 C-10,7.099999904632568 -9.100000381469727,8 -8,8 C-8,8 4,8 4,8 C5.099999904632568,8 6,7.099999904632568 6,6 C6,6 6,1.5199999809265137 6,1.5199999809265137 C6,1.5199999809265137 10,5.5 10,5.5 C10,5.5 10,-5.5 10,-5.5 C10,-5.5 6,-1.5199999809265137 6,-1.5199999809265137z"></path></g></g></g></g></svg>
                                         </div>
                                     </div>
-                                    <div class="screen_swtich__controll overlay__round">
-                                        <div class="controller__icon" onclick="screenShare()">
-                                            <i class="fas fa-desktop"></i>
+                                    <div class="screen_swtich__controll ">
+                                        <div class="screen_share_bd" id='btnScreenShareCustom'>
+                                            <svg class="screen__icon" xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-arrow-up-square" viewBox="0 0 16 16">
+                                                <path  fill="#3c4043" fill-rule="evenodd" d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm8.5 9.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V11.5z"/>
+                                            </svg>
+                                            <p class="text__alert">Present Now</p>
                                         </div>
                                     </div>
+
+                                    <div class="chat__box__toggle">
+                                        <div class="chat__setter" onclick="chatToggle()">
+                                           <svg fill="#3c4043" width="26" height="26" fill="currentColor" class="bi bi-chat-right-text" viewBox="0 0 16 16">
+                                            <path d="M2 1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h9.586a2 2 0 0 1 1.414.586l2 2V2a1 1 0 0 0-1-1H2zm12-1a2 2 0 0 1 2 2v12.793a.5.5 0 0 1-.854.353l-2.853-2.853a1 1 0 0 0-.707-.293H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12z"/>
+                                            <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6zm0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
+                                            </svg>
+                                            <p class="text__chat">Chat</p>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                             <!-- Control Bar end -->
-
-                        </div>
-                    </div>
-                   </div>
-            </div>
+           
        </div>
-       {{-- meeting room end --}}
+         
 
+             {{-- meeting room end --}}
        <div class="schedule__meeting ">
             <div class="schedule__box">
                 <div class="schedule__content">
-                    <p class="text-primary font-weight-bold">Your Meeting is Schedule on <b id="meeting_time"></b></p>
+                    <p class="text-primary font-weight-bold"><b id="meeting_time"></b></p>
                 </div>
             </div>
        </div>
@@ -205,9 +344,9 @@
        {{-- meeting end --}}
       <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous"></script>
-     <script src="{{ asset('js/webRTC-package.js') }}"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous"></script>
+     
+     <script src='https://meet.jit.si/external_api.js'></script>
          <script>
          
                     
@@ -218,116 +357,142 @@
             let code = "{{ app('request')->input('code') }}";
             let meeting_time="{{ base64_decode(app('request')->input('code')) }}";
             console.log(meeting_time,current_time);
-                 function joinAgain(){
-                    console.log('ff');
-                        webRTC.join(code);
-                    
-                    }
+                 
             if(new Date(current_time) >= new Date(meeting_time)){
+             function chatToggle(){
+                    apiObj.executeCommand('toggleChat');           
+               
+             }
+             
+             
                 // init web rtc communicationg
                 console.log('meeting valid');
+                const domain = 'meet.jit.si';
 
-                webRTC.join(code);
-                 let streamConfig = {
-                    video: {
-                        width: {
-                            min: 1280
-                        },
-                        height: {
-                            min: 720
-                        }
+                 var roomName = "{{ app('request')->input('code')}}";
+
+                const options = {
+                    roomName: roomName,
+                    width: '100%',
+                    height: '100%',
+                    parentNode: document.querySelector('#meeting__container'),
+                    
+                  DEFAULT_REMOTE_DISPLAY_NAME: 'New User',
+                    userInfo: {
+                        displayName: 'Participend'
                     },
-                    audio: true,
-                }
-
-                  webRTC.localStream(function(stream) {
-                    $('#video__block').css('display', 'block');
-                   $('.loader').fadeOut();
-                    $('.meeting__room__wrapper').fadeIn();
-                    let newVid = document.getElementById('local-video');
-                    newVid.srcObject = stream;
-                }, streamConfig);
-
-
-                 webRTC.remoteStream(function(stream, id) {
-
-            let newVid = document.getElementById('remote-video')
-            newVid.srcObject = stream;
-            // newVid.id = id;
-            newVid.autoplay = true;
-        });
-
-        function videoToggle() {
-
-            webRTC._videoTrackToggle('', function(val) {
-                if (val) {
-                    $('.video__controll i').addClass('fa-video');
-                    $('.video__controll i').removeClass('fa-video-slash');
-                } else {
-                    $('.video__controll i').removeClass('fa-video');
-
-                    $('.video__controll i').addClass('fa-video-slash');
-                }
-            });
-        }
-
-        function closecall() {
-            console.log('fd');
-            webRTC.closeConnection(function() {
-                $('.meeting__room__wrapper').fadeOut();
+                    configOverwrite:{
+                        hideParticipantsStats:true,
+                        enableWelcomePage:false,
+                        enableClosePage: false,
+                        prejoinPageEnabled:false,
+                        enableInsecureRoomNameWarning:false,
+                        doNotStoreRoom: true,
+                       enableNoAudioDetection:false,
+                       enableNoisyMicDetection:false,
+                        enableWelcomePage: false,
+                        prejoinPageEnabled: false,
+                        disableRemoteMute: true,
+                       
+                        remoteVideoMenu: {
+                            disableKick: true
+                        },
+                    },
+                    interfaceConfigOverwrite: {
+                        APP_NAME:"Geeklone",
+		            	SHOW_PROMOTIONAL_CLOSE_PAGE:false,
+                        DEFAULT_BACKGROUND:"#000",
+                        DEFAULT_LOGO_URL:"http://doc-le-guide-sante.com/assets/uploads/companies/leadify.png",
+                       HIDE_DEEP_LINKING_LOGO:true,
+                       DISABLE_VIDEO_BACKGROUND: true,
+                       HIDE_INVITE_MORE_HEADER: true,
+                        DISPLAY_WELCOME_FOOTER:false,
+                         JITSI_WATERMARK_LINK:"loc",
+                        filmStripOnly: false,
+                        SHOW_JITSI_WATERMARK: false,
+			            SHOW_POWERED_BY:false,
+                        SHOW_DEEP_LINKING_IMAGE:false,
+                        VIDEO_QUALITY_LABEL_DISABLED: true,
+                        SHOW_WATERMARK_FOR_GUESTS: false,
+                        DEFAULT_REMOTE_DISPLAY_NAME: 'Remote User',
+                        TOOLBAR_BUTTONS: []
+                    },
+                    onload: function () {
+                    
+                        $('.meeting__end').fadeOut();
+                           $('.loader').fadeOut();
+                             $('.room__meeting').fadeIn();
+                        
+                    }
+                };
+                apiObj = new JitsiMeetExternalAPI(domain, options);
+              
+                apiObj.executeCommand('subject', 'Appointment Meeting');
+                 $("#btnHangup").on('click', function () {
+ 			            console.log('Hit close');
+                  $('.room__meeting').fadeOut();
                 $('.meeting__end').fadeIn();
+			            window.location.href="https://booking.geeklone.com";
+                   apiObj.executeCommand('hangup');
+                  
+                    });
+            $("#btnCustomMic").on('click', function () {
+                apiObj.executeCommand('toggleAudio');
             });
-        }
-
-        function audio() {
-            webRTC._audioTrackToggle(function(val) {
-
-                if (val) {
-                    $('.mic_controll i').addClass('fa-microphone');
-                    $('.mic_controll i').removeClass('fa-microphone-slash');
+            $("#btnCustomCamera").on('click', function () {
+                apiObj.executeCommand('toggleVideo');
+            });
+            $("#btnCustomTileView").on('click', function () {
+                apiObj.executeCommand('toggleTileView');
+            });
+            $("#btnScreenShareCustom").on('click', function () {
+                apiObj.executeCommand('toggleShareScreen');
+            });
+            apiObj.addListener('audioMuteStatusChanged',function(val){
+                  if (!val.muted) {
+                     
+                    $('.mic_controll .mic_unmuted').css('display','block');
+                   $('.mic_controll .controller__icon').css('background-color','#ffffff');
+                    $('.mic_controll .mic_muted').css('display','none');
                 } else {
-                    $('.mic_controll i').removeClass('fa-microphone');
-
-                    $('.mic_controll i').addClass('fa-microphone-slash');
+            
+                     $('.mic_controll .mic_unmuted').css('display','none');
+                       $('.mic_controll .controller__icon').css('background-color','#d93025');
+                    $('.mic_controll .mic_muted').css('display','block');
                 }
-
             });
-        }
-
-        function screenShare() {
-
-            webRTC.screenShare(function(val) {
-                console.log(val);
-                $('.video__controll i').attr('disabled', true);
+            apiObj.addListener('screenSharingStatusChanged',function(val){
+                  if (!val.on) {
+                     $('.text__alert').text('Present Now');
+                } else {
+                        $('.text__alert').text('You are Presenting now');
+                }
             });
-        }
+                apiObj.addListener('videoMuteStatusChanged',function(val){
+                  if (!val.muted) {
+                  
+                    $('.video__controll .video_unmuted').css('display','block');
+                   $('.video__controll .controller__icon').css('background-color','#ffffff');
+                    $('.video__controll .video_muted').css('display','none');
+                } else {
+                    
+                     $('.video__controll .video_unmuted').css('display','none');
+                       $('.video__controll .controller__icon').css('background-color','#d93025');
+                    $('.video__controll .video_muted').css('display','block');
+                }
+            });
 
-function doSwap() {
-    swapElements(document.getElementById("remote-video"), document.getElementById("local-video"));
-}
-
-function swapElements(obj1, obj2) {
-    // create marker element and insert it where obj1 is
-    var temp = document.createElement("div");
-    obj1.parentNode.insertBefore(temp, obj1);
-
-    // move obj1 to right before obj2
-    obj2.parentNode.insertBefore(obj1, obj2);
-
-    // move obj2 to right before where obj1 used to be
-    temp.parentNode.insertBefore(obj2, temp);
-
-    // remove temporary marker node
-    temp.parentNode.removeChild(temp);
-}
-                //end if
+                        //end if
             }else{
-
-                console.log('Meeting In valid');
-                $('.loader').fadeOut();
+                 $('.loader').fadeOut();
                 $('.schedule__meeting').fadeIn();
-                $('#meeting_time').text(moment(meeting_time).format('DD-MM-YYYY hh:mm A'));
-             
+                    if(moment(meeting_time).format('DD-MM-YYYY hh:mm A') != 'Invalid date'){
+                               
+                         $('#meeting_time').text('Your Meeting is Schedule on  '+moment(meeting_time).format('DD-MM-YYYY hh:mm A'));
+                    }else{
+                         $('#meeting_time').text('You Tring To Access Wrong meeting!');
+
+                    }
             }
 
 

@@ -215,7 +215,7 @@ class EmailTemplateController extends AdminBaseController
       
           $templateSubject = $request->template_subject;
           $templateContent = $request->template_content;
-          $lead = Lead::whereRaw('md5(id) = ?', $leadId)->first();
+           $lead = Lead::whereRaw('md5(id) = ?', $leadId)->first();
   
           $leadDatas = LeadData::where('lead_id', $lead->id)
                                   ->get();

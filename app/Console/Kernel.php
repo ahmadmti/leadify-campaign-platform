@@ -13,7 +13,8 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        'App\Console\Commands\AppointmentAlert'
+        // 'App\Console\Commands\AppointmentAlert'
+        'App\Console\Commands\NotifyUsers',
     ];
 
     /**
@@ -26,7 +27,8 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
-        $schedule->command('appintment:alert')->everyMinute();
+        // $schedule->command('appintment:alert')->everyMinute();
+        $schedule->command('notify:users')->everyMinute();
         
     }
 

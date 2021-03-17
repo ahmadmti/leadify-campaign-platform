@@ -44,15 +44,10 @@
                                                                
                                     @if($bookedAppointment->meeting_link)    
                                     @php
-                                    $code = base64_encode($bookedAppointment->meeting_link);
+                                    $code = $bookedAppointment->meeting_link;
                                     $url = url("/admin/meeting").'?code='.$code; 
-
                                     echo   "<a target='_blank' href='$url'>Link</a>";
-                
-
-                                    @endphp  
-
-                                 
+                                    @endphp                   
                                     @endif
                                     </td>
                                     <td>

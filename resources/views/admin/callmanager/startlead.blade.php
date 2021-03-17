@@ -38,6 +38,9 @@
                     <li class="nav-item">
                         <a class="nav-link" id="call-history-tab" data-toggle="tab" href="#call-history" role="tab" aria-controls="call-history" aria-selected="false"><i class="fa fa-stopwatch"></i> @lang('module_campaign.callHistory')</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="call-history-tab" data-toggle="tab" href="#video-call" role="tab" aria-controls="video-call" aria-selected="false"><i class="fas fa-video"></i> @lang('module_campaign.videoCall')</a>
+                    </li>
                 </ul>
                 <div class="tab-content" id="myTabContent">
                     <div class="tab-pane fade show active" id="campaign-leads" role="tabpanel" aria-labelledby="campaign-leads-tab">
@@ -213,6 +216,51 @@
                                             <tr>
                                                 <td colspan="3" class="text-center">
                                                     @lang('messages.noCallHistoryFound')
+                                                </td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="video-call" role="tabpanel" aria-labelledby="video-call-tab">
+                    <div class="card">
+                            <div class="card-body p-0">
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">@lang('module_call_enquiry.appointmentBy')</th>
+                                        <th scope="col">@lang('module_campaign.salesMember')</th>
+                                        <th scope="col">@lang('module_campaign.appointmentTime')</th>
+                                        <th scope="col">@lang('module_call_enquiry.link')</th>
+
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                  
+                                        @forelse($appointments as $videoHistory)
+                                            <tr class="table-bottom-border">
+                                                <td>{{ $loop->remaining + 1 }}</td>
+                                                <td>{{$videoHistory->user->first_name}} {{$videoHistory->user->last_name}}</td>
+                                                <td>{{$videoHistory->salesMember->first_name}} {{$videoHistory->salesMember->last_name}}</td>
+                                                <td>{{ $videoHistory->appointment_time}}</td>
+                                                <td>   
+                                                @if($videoHistory->meeting_link)    
+                                                @php
+                                                $code = $videoHistory->meeting_link;
+                                                $url = url("/admin/meeting").'?code='.$code; 
+                                                echo   "<a target='_blank' href='$url'>Link</a>";
+                                                @endphp                   
+                                                @endif
+                                                </td>
+                                             
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="5" class="text-center">
+                                                    @lang('messages.noVideoCallHistoryFound')
                                                 </td>
                                             </tr>
                                         @endforelse

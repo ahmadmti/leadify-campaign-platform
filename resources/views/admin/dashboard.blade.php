@@ -128,7 +128,7 @@
                                 <th>@lang('app.campaign')</th>
                                 <th>@lang('module_campaign.salesMember')</th>
                                 <th>@lang('module_campaign.appointmentTime')</th>
-				<th>@lang('module_campaign.meeting_link')</th>
+				                <th>@lang('module_campaign.meeting_link')</th>
                                 <th>@lang('app.action')</th>
                             </tr>
                             @foreach($bookedAppointments as $bookedAppointment)
@@ -140,15 +140,14 @@
                                     <td>{{ ($bookedAppointment->appointment_time)->format($user->date_format .' ' . $user->time_format) }}</td>
                                     <td>
 
-                                @if($bookedAppointment->meeting_link)
-                                @php
-                                   $code = $bookedAppointment->meeting_link;
+                                    @if($bookedAppointment->meeting_link)
+                                    @php
+                                    $code = $bookedAppointment->meeting_link;
                                     $url = url("/admin/meeting").'?code='.$code; 
 
                                     echo   "<a target='_blank' href='$url'>Link</a>";
-                
-
-                                    @endphp                                  @endif
+                                    @endphp                                  
+                                    @endif
                                     </td> 
 				                        <td>
                                         <a href="{{ route('admin.callmanager.lead', [md5($bookedAppointment->lead_id)]) }}" class="btn btn-icon btn-success"

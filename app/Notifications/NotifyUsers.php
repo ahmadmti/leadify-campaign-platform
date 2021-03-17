@@ -8,13 +8,11 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class SendMeetingLink extends Notification implements ShouldQueue
+class NotifyUsers extends Notification implements ShouldQueue
 {
     use Queueable , EmailSettings;
-
     private $mailSubject;
     private $mailContent;
-
     /**
      * Create a new notification instance.
      *
@@ -27,6 +25,7 @@ class SendMeetingLink extends Notification implements ShouldQueue
 
         $this->setMailConfigs();
     }
+
 
     /**
      * Get the notification's delivery channels.
@@ -45,11 +44,11 @@ class SendMeetingLink extends Notification implements ShouldQueue
      * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
-   public function toMail($notifiable)
+    public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->subject($this->mailSubject)
-                    ->markdown('emails.send-campaign-email', ['mailContent' => $this->mailContent]);
+        ->subject($this->mailSubject)
+        ->markdown('emails.send-campaign-email', ['mailContent' => $this->mailContent]);
     }
 
     /**

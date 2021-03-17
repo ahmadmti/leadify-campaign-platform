@@ -73,4 +73,5 @@ return array (
     'sendMail' => 'Do you want to send meeting link?',
     'meeting_link' => 'Meeting Link',
     'clientEmailText'=>'Please Enter Client Email Id',
+    'videoCall'=>'Video',
 );

@@ -480,7 +480,7 @@ $('#appointment_time').one("mouseover", function() {
                 $('.month-label').text(february);
             }
             if($('.month-label').text()=='march'){
-                var february =$('<div>{{trans('module_lead.march')}}</div>').text()
+                var march =$('<div>{{trans('module_lead.march')}}</div>').text()
                 $('.month-label').text(march);
             }
             if($('.month-label').text()=='april'){

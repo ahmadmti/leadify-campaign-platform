@@ -2,6 +2,9 @@
 use Illuminate\Http\Request;
 
 
+Route::get('/admin/meeting',function(){
+    return view('admin.meeting.index');
+});
 Route::get('/book-appointment/{id}', ['as' => 'book-appointments', 'uses' => 'Admin\AppointmentCalendarController@bookAppointmentLink']);
 Route::get('/availableDays', ['as' => 'check-availableDays', 'uses' => 'Admin\ScheduleSettingController@availableDays'] );
 

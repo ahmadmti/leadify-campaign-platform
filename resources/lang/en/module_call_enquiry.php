@@ -24,5 +24,7 @@ return array (
     'editFollowUp' => 'Edit Follow Up Call',
     'selectAgent' => 'Select Agent',
     'lastCallingAgent' => 'Last Calling Agent',
-    'editAppointment' => 'Edit Appointment'
+    'editAppointment' => 'Edit Appointment',
+    'appointmentBy' => 'Appointment By',
+    'link' => 'link',
 );

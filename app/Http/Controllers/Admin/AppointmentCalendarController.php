@@ -17,7 +17,9 @@ use Auth;
 use Helper;
 use App\Models\LeadData;
 use App\Notifications\SendMeetingLink;
+use App\Notifications\NotifyUsers;
 use Illuminate\Support\Facades\Notification;
+use App\Models\EmailTemplate;
 
 class AppointmentCalendarController extends AdminBaseController
 {
@@ -142,7 +144,10 @@ class AppointmentCalendarController extends AdminBaseController
     public function destroy($id)
     {
         $appointment         = Appointment::findOrFail($id);
-
+           $leadDatas = LeadData::where('lead_id', $appointment->lead_id)->where('field_name','Email')->first();
+           $saleMember = SalesMember::where('id',$appointment ->sales_member_id)->first();
+           $sendEmailTemplate = EmailTemplate::where('id',4)->first();
+           
         // Check current logged in user is member of appointment campaign
         $userActiveCampaigns = $this->user->activeCampaigns()->pluck('id')->toArray();
         if(!in_array($appointment->lead->campaign_id, $userActiveCampaigns))
@@ -153,7 +158,17 @@ class AppointmentCalendarController extends AdminBaseController
         }
 
         $appointment->delete();
+        $templateContent = $sendEmailTemplate->content ;
+           if ($saleMember->email) {
+            $saleMemberEmail = $saleMember->email;
+            Notification::route('mail', $saleMemberEmail )->notify(new SendMeetingLink($sendEmailTemplate->subject, $templateContent ));
 
+           }
+           if ($leadDatas->field_value) {
+            $clientEmail = $leadDatas->field_value;
+            Notification::route('mail',$clientEmail )->notify(new SendMeetingLink($sendEmailTemplate->subject, $templateContent ));
+
+           }
         return Reply::success('messages.deleteSuccess');
     }
 
@@ -371,13 +386,13 @@ class AppointmentCalendarController extends AdminBaseController
     
      public function update(UpdateRequest $request,$id)
     {
-      
+        $sendEmailTemplate = EmailTemplate::where('id',3)->first();
         // return $request->all();
         try {
             $user = Auth::user();
             $timezone = $user->timezone;
             $appointment         = Appointment::findOrFail($id);
-
+            $appointment->campaign_id = $request->campaign_id;
         // Check current logged in user is member of appointment campaign
         $userActiveCampaigns = $this->user->activeCampaigns()->pluck('id')->toArray();
         if(!in_array($appointment->lead->campaign_id, $userActiveCampaigns))
@@ -412,19 +427,28 @@ class AppointmentCalendarController extends AdminBaseController
                 $saleMember = SalesMember::where('id',$request->sales_member_id)->first();
                 $code = base64_encode($appointment->appointment_time);
                 $url = url("/admin/meeting").'?code='.$code; 
-           
-    
-               Notification::route('mail', $saleMember->email)->notify(new SendMeetingLink('Appointment Meeting Link',$url));
-               if ($user->email != null) {
-                Notification::route('mail', $user->email)->notify(new SendMeetingLink('Appointment Meeting Link',$url));
-            }
-            Notification::route('mail', $sender_email)->notify(new SendMeetingLink('Appointment Meeting Link',$url));
-            
-            }
-            else {
-                return response()->json(['status'=>'error']);
-            }
-     
+                $leadDatas = LeadData::where('lead_id', $request->lead_id)->get();
+                $templateContent =$sendEmailTemplate->content;
+                foreach ($leadDatas as $leadData)
+                {
+                    $fieldNameString = '##'.$leadData->field_name.'##';
+                    $fieldValue = $leadData->field_value;
+                    if($leadData->field_name  == 'Video Meeting Link') {
+                        $fieldValue =  $url;      
+                    }    
+                  $templateContent = str_replace($fieldNameString, $fieldValue, $templateContent);
+                }
+                return  $templateContent;
+                Notification::route('mail', $saleMember->email)->notify(new SendMeetingLink($sendEmailTemplate->subject, $templateContent ));
+                
+                if ($user->email != null) {
+                    Notification::route('mail', $user->email)->notify(new SendMeetingLink($sendEmailTemplate->subject, $templateContent ));
+                }
+                    Notification::route('mail', $sender_email)->notify(new SendMeetingLink($sendEmailTemplate->subject, $templateContent ));
+                }
+                else {
+                    return response()->json(['status'=>'error']);
+                }
         }
         $appointment->sales_member_id = $request->sales_member_id;
         $appointment->save();
@@ -444,6 +468,8 @@ class AppointmentCalendarController extends AdminBaseController
     }
      public function store(StoreRequest $request)
     {
+        $sendEmailTemplate = EmailTemplate::where('id',3)->first();
+      
         // return $request->all();
        \DB::beginTransaction();
 
@@ -454,6 +480,7 @@ class AppointmentCalendarController extends AdminBaseController
        try {
             $appointment         = new Appointment();
             $appointment->lead_id = $request->lead_id;
+            $appointment->campaign_id = $request->campaign_id;
             if ($timezone == "Indian/Mauritius") {
             $appointment->appointment_time = Carbon::createFromFormat('m-d-Y H:i', $request->appointment_time)->addMinutes(180);
             }
@@ -477,16 +504,27 @@ class AppointmentCalendarController extends AdminBaseController
                 $appointment->meeting_link	 =$code;
                 $saleMember = SalesMember::where('id',$request->sales_member_id)->first();
         
-         
-                $url = url("/admin/meeting").'?code='.$code; 
-           
-                Notification::route('mail', $saleMember->email)->notify(new SendMeetingLink('Appointment Meeting Link',$url));
+                $url = url("/admin/meeting").'?code='.$code;    
+                $leadDatas = LeadData::where('lead_id', $request->lead_id)->get();
+                $templateContent =$sendEmailTemplate->content;
+                foreach ($leadDatas as $leadData)
+                {
+                    $fieldNameString = '##'.$leadData->field_name.'##';
+                    $fieldValue = $leadData->field_value;
+
+                    if($leadData->field_name  == 'Video Meeting Link') {
+                        $fieldValue =  $url;      
+                    }
+                  $templateContent = str_replace($fieldNameString, $fieldValue, $templateContent);
+                }
+              //  return  $templateContent;
+                Notification::route('mail', $saleMember->email)->notify(new SendMeetingLink($sendEmailTemplate->subject, $templateContent ));
                 
                 if ($user->email != null) {
-                    Notification::route('mail', $user->email)->notify(new SendMeetingLink('Appointment Meeting Link',$url));
+                    Notification::route('mail', $user->email)->notify(new SendMeetingLink($sendEmailTemplate->subject, $templateContent ));
                 }
             
-                    Notification::route('mail', $sender_email)->notify(new SendMeetingLink('Appointment Meeting Link',$url));
+                    Notification::route('mail', $sender_email)->notify(new SendMeetingLink($sendEmailTemplate->subject, $templateContent ));
                 }
                 else {
                     return response()->json(['status'=>'error']);
@@ -513,6 +551,7 @@ class AppointmentCalendarController extends AdminBaseController
        
 
     }
+ 
     private function meetingLink($time){
         return $this->CryptoJSAesEncrypt('usman',$time);
     }
@@ -532,8 +571,7 @@ class AppointmentCalendarController extends AdminBaseController
         // return $data;
         return json_encode($data);
     }
-    
-    // $string_json_fromPHP = CryptoJSAesEncrypt("your passphrase", "your plain text");
+ 
     
  
 }
